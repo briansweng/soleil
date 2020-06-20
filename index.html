@@ -1,6 +1,7 @@
 <html>
   <head>
     <style>
+
     .button {
       background-color: #4CAF50; /* Green */
       border: none;
@@ -13,19 +14,56 @@
       margin: 4px 2px;
       cursor: pointer;
     }
+    body {background:#ccc}
+    .page {
+      display: flex;
+      flex-direction: column;  /* make main axis vertical */
+      justify-content: center; /* center items vertically, in this case */
+      align-items: center;
+      width: 460px;
+      height:560px;
+      background:#FFF;
+      margin:40px auto;
+      padding: 40px;
+    }
+    .shaddow
+    {
+        position:relative;
+        -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+           -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+                box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    }
+    .shaddow:before, .shaddow:after
+    {
+        content:"";
+        position:absolute;
+        z-index:-1;
+        -webkit-box-shadow:0 0 20px rgba(0,0,0,0.8);
+        -moz-box-shadow:0 0 20px rgba(0,0,0,0.8);
+        box-shadow:0 0 20px rgba(0,0,0,0.8);
+        top:0;
+        bottom:0;
+        left:10px;
+        right:10px;
+        -moz-border-radius:100px / 10px;
+        border-radius:100px / 10px;
+    }
+    .shaddow:after
+    {
+        right:10px;
+        left:auto;
+        -webkit-transform:skew(8deg) rotate(3deg);
+           -moz-transform:skew(8deg) rotate(3deg);
+            -ms-transform:skew(8deg) rotate(3deg);
+             -o-transform:skew(8deg) rotate(3deg);
+                transform:skew(8deg) rotate(3deg);
+    }
     </style>
     <script>
-      const message = ["Dpohsbut Tpmfjm",
-                       "Ifsf jt b rvpuf gspn b xjtf nbo uibu tpnfipx bqqmjft up mjgf",
-                       "Tpnfujnft Jmm tubsu b tfoufodf boe J epou fwfo lopx xifsf jut hpjoh",
-                       "J kvtu ipqf J gjoe ju bmpoh uif xbz",
-                       ".Njdibfm Tdpuu"];
-      const key = 1;
       let quiz = {
         currentQuestion:0,
         questionsSeen:{},
-        questionsAnswered:[],
-        numQuestionsAnswered:0,
+        questionsAnswered:0,
         questions:[
           {
             "q":"What does Michael pretend to fire Pam over in season one?",
@@ -128,50 +166,25 @@
           }
         ]
       };
-      function init(){
-        var div = document.getElementById('message');
-        div.innerHTML += message[0] + "<br>";
-        div.innerHTML += message[1] + "<br><br>";
-        div.innerHTML += message[2] + "<br>";
-        div.innerHTML += message[3] + "<br>";
-        div.innerHTML += message[4] + "<br>";
-      }
+      let pageNum = 1;
+      function Next(){
+        document.getElementById("page"+pageNum).style.display = "none";
+        pageNum++;
+        document.getElementById("page"+pageNum).style.display = "flex";
 
-      function Decode(message, key){
-        let decodedMessage = "";
-        for(let x = 0; x < message.length; x++){
-          if(message[x] != ' ')
-            decodedMessage += String.fromCharCode((message[x].charCodeAt()-key));
-          else
-            decodedMessage += ' ';
+        if(pageNum == 3){
+          question();
         }
-        return decodedMessage;
       }
 
-      function Run(message, key){
-        document.getElementById("decode").style.display = "none";
-        isQuizMode();
+      function Restart(){
+        document.getElementById("page"+pageNum).style.display = "none";
+        pageNum = 3;
+        document.getElementById("page"+pageNum).style.display = "flex";
         question();
+        quiz.questionsAnswered = 0;
       }
-      function isQuizMode(){
-        if(quiz.questionsAnswered < 3) {
-          document.getElementById("question").style.display = "block";
-        }
-        else {
-          document.getElementById("question").style.display = "none";
 
-          var div = document.getElementById('message');
-          div.innerHTML = "";
-          div.innerHTML += Decode(message[0], key) + "<br>";
-          div.innerHTML += Decode(message[1], key) + "<br><br>";
-          div.innerHTML += Decode(message[2], key) + "<br>";
-          div.innerHTML += Decode(message[3], key) + "<br>";
-          div.innerHTML += Decode(message[4], key) + "<br>";
-
-          document.getElementById("win").style.display = "block";
-
-        }
-      }
       function getNextQuestion(){
         let availableQuestions = [];
         if(Object.keys(quiz.questionsSeen).length === quiz.questions.length ){
@@ -183,7 +196,6 @@
             availableQuestions.push(index);
           }
         });
-
 
         return availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
       }
@@ -205,9 +217,12 @@
         setTimeout( () => {
           q.style.display = "block";
           r.style.display = "none";
-          isQuizMode();
+
           if(quiz.questionsAnswered < 3) {
             question();
+          }
+          else{
+            Next();
           }
         }, 2000)
       }
@@ -224,35 +239,57 @@
     </script>
   </head>
   <body>
-    <h1>Congrats Soleil!!!</h1>
-    <p>To decode you must prove it is you by answering 3 questions</p>
-    <p id="secret"><b>Secret Message</b></p>
-    <div id="message" style="border-style: solid;border-width: 1px;"></div>
-    <script type="text/javascript">init();</script>
-    <button id="decode" class="button" onclick="Run(message, key)">Decode</button>
-    <div id="question" style="display:none">
-      <br><br>
-      <h2>The Office Trivia</h2>
-      <p id="q"><p>
-      <button id="a1" class="button" onclick="answer(0)"></button>
-      <button id="a2" class="button" onclick="answer(1)"></button>
-      <button id="a3" class="button" onclick="answer(2)"></button>
+    <div id="page1" class="page shaddow">
+      <h1>Congrats Soleil!!!</h1>
+      <img src="congrats.png" style="width:400px; height:300px;">
+      <div>
+        <br>
+        <button class="button" onclick="Next()">Open Card</button>
+      </div>
     </div>
-    <div id="correct" style="display:none">
-      <br><br>
-      <h2 style="color:green;">Correct!</h2>
-      <img src="correct.jpg" style="width:400px; height:300px;">
+    <div id="page2" class="page shaddow" style="display:none">
+      <img src="start.jpg" style="width:400px; height:300px;">
+      <div>
+        <br><br>
+        <button class="button" onclick="Next()">Start</button>
+      </div>
     </div>
-    <div id="wrong" style="display:none">
-      <br><br>
-      <h2 style="color:red;">Wrong!</h2>
-      <img src="wrong.jpg" style="width:400px; height:300px;">
+    <div id="page3" class="page shaddow" style="display:none">
+      <div id="question">
+        <h2>The Office Trivia</h2>
+        <p id="q"><p>
+        <div style="padding-bottom: 10px"><button id="a1" class="button" onclick="answer(0)"></button></div>
+        <div style="padding-bottom: 10px"><button id="a2" class="button" onclick="answer(1)"></button></div>
+        <div style="padding-bottom: 10px"><button id="a3" class="button" onclick="answer(2)"></button></div>
+
+
+
+      </div>
+      <div id="correct" style="display:none">
+        <br><br>
+        <h2 style="color:green;">Correct!</h2>
+        <img src="correct.jpg" style="width:400px; height:300px;">
+      </div>
+      <div id="wrong" style="display:none">
+        <br><br>
+        <h2 style="color:red;">Wrong!</h2>
+        <img src="wrong.jpg" style="width:400px; height:300px;">
+      </div>
     </div>
-    <div id="win" style="display:none">
-      <br><br>
+    <div id="page4" class="page shaddow" style="display:none">
       <img src="won.jpg">
+      <p>
+        Congrats Soleil!!!<br>
+        Below is a quote from a very wise man that somehow applies to life.<br>
+        Your favorite cousin in Ithaca, NY,<br>
+        -Brian<br><br>
+
+        "Sometimes I'll start a sentence and I don't even know where its going.
+        I just hope I find it along the way."<br>
+        -Michael Scott
+      </p>
+      <button class="button" onclick="Restart()">Restart Quiz</button>
     </div>
-    <br><br>
 
 
   </body>
